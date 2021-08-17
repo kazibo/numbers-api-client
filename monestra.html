@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Random Numbers by Igor Atsberger</title>
+  </head>
+
+  <body>
+    <p>Fill data for number fact!</p>
+
+    <ul>
+      <li>
+        <input
+          type="radio"
+          id="input-number-choice-1"
+          name="number"
+          value="certain"
+          onclick="showHideInputs('certain')"
+          checked
+        />
+        <label for="input-number-choice-1">Certain</label>
+        <input
+          type="radio"
+          id="input-number-choice-2"
+          name="number"
+          value="range"
+          onclick="showHideInputs('range')"
+        />
+        <label for="input-number-choice-2">Range</label>
+      </li>
+      <li>
+        <div id="input-number-certain" class="display">
+          Input number to get a fact!
+          <input id="input-number" />
+          <button type="button" onclick="fillRandomNumber()">Random</button>
+        </div>
+        <div id="input-number-range" class="hide">
+          Select range to get a fact about number from range!
+          <input id="input-number-range-min" />
+          <input id="input-number-range-max" />
+        </div>
+      </li>
+      <li>
+        What to show if fact not found?
+        <input
+          type="radio"
+          id="input-notfound-choice-1"
+          name="notfound"
+          value="default"
+          checked
+        />
+        <label for="input-notfound-choice-1">Default</label>
+        <input
+          type="radio"
+          id="input-notfound-choice-2"
+          name="notfound"
+          value="floor"
+        />
+        <label for="input-notfound-choice-2">Floor</label>
+        <input
+          type="radio"
+          id="input-notfound-choice-3"
+          name="notfound"
+          value="ceil"
+        />
+        <label for="input-notfound-choice-3">Ceil</label>
+      </li>
+      <li>
+        Default
+        <input id="input-default" />
+      </li>
+      <li>
+        <input type="checkbox" id="input-fragment-checkbox" value="Fragment" />
+        <label for="input-fragment-checkbox">Fragment</label><br />
+      </li>
+    </ul>
+
+    <button type="button" onclick="apiRequest()">Submit</button>
+
+    <p id="demo">Click "Submit" to get a number fact!</p>
+
+    <script>
+      function apiRequest() {
+        var url = "http://numbersapi.com/";
+
+        if (document.getElementById("input-number-choice-1").checked) {
+          var str = document.getElementById("input-number").value;
+          if (isNaN(parseFloat(str)) && str != "random") {
+            document.getElementById("demo").innerHTML = "Incorrect input!";
+            return;
+          }
+          url = url + str + "?";
+        } else {
+          var str1 = document.getElementById("input-number-range-min").value;
+          var str2 = document.getElementById("input-number-range-max").value;
+          if (
+            isNaN(parseFloat(str1)) ||
+            isNaN(parseFloat(str2)) ||
+            parseFloat(str1) > parseFloat(str2)
+          ) {
+            document.getElementById("demo").innerHTML = "Incorrect input!";
+            return;
+          }
+          url = url + "random?min=" + str1 + "&max=" + str2 + "&";
+        }
+
+        if(document.getElementById("input-fragment-checkbox").checked){
+            url = url + "fragment&"
+        }
+
+        if (document.getElementById("input-notfound-choice-2").checked) {
+          url = url + "notfound=floor&";
+        } else if (document.getElementById("input-notfound-choice-3").checked) {
+          url = url + "notfound=ceil&";
+        }
+
+        if(!isNaN(document.getElementById("input-default")).value){
+            url = url + "default=" + document.getElementById("input-default").value + "&";
+        }
+
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("GET", url, false);
+        xmlHttp.send(null);
+        var text = xmlHttp.responseText;
+
+        console.log(url);
+        console.log(text);
+
+        document.getElementById("demo").innerHTML = text;
+      }
+
+      function showHideInputs(selected) {
+        var inputNumberCertain = document.getElementById(
+          "input-number-certain"
+        );
+        var inputNumberRange = document.getElementById("input-number-range");
+        if (selected == "range") {
+          inputNumberCertain.className = "hide";
+          inputNumberRange.className = "display";
+        } else {
+          inputNumberCertain.className = "display";
+          inputNumberRange.className = "hide";
+        }
+      }
+
+      function fillRandomNumber() {
+        var inputNumber = document.getElementById("input-number");
+        inputNumber.value = "random";
+      }
+    </script>
+  </body>
+</html>
+
+<style type="text/css">
+  .display {
+    display: block;
+  }
+  .hide {
+    display: none;
+  }
+</style>
